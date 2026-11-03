@@ -31,12 +31,40 @@ yRange = R
 x = rng.random(N) * 2 * xRange - xRange
 y = rng.random(N) * 2 * yRange - yRange
 leftCirc = ((x + R/2)**2 + y**2 <= R**2) & ((x - R/2)**2 + y**2 > R**2)
-rightCirc = ((x - R/2))**2 + y**2 <= R**2 & ((x + R/2)**2 + y**2 > R**2)
-bothCirc = ((x - R/2))**2 + y**2 <= R**2 & ((x + R/2)**2 + y**2 <= R**2)
-noCirc = ((x - R/2))**2 + y**2 > R**2 & ((x + R/2)**2 + y**2 > R**2)
+rightCirc = ((x - R/2)**2 + y**2 <= R**2) & ((x + R/2)**2 + y**2 > R**2)
+bothCirc = ((x - R/2)**2 + y**2 <= R**2) & ((x + R/2)**2 + y**2 <= R**2)
+noCirc = ((x - R/2)**2 + y**2 > R**2) & ((x + R/2)**2 + y**2 > R**2)
 AB = 6 * R**2
 H = np.sum(bothCirc)
 AoverlapMes = AB * H / N
 Aoverlap = (2 * np.pi / 3 - np.sqrt(3)/2) * R**2
-print(Aoverlap)
-print(AoverlapMes)
+
+leftCount = np.sum(leftCirc)
+rightCount = np.sum(rightCirc)
+bothCount = np.sum(bothCirc)
+print(f"Points in neither circle: {np.sum(noCirc)}")
+print(f"Points in left circle: {leftCount}")
+print(f"Points in right circle: {rightCount}")
+print(f"Points in both circles: {bothCount}")
+print(f"Estimated overlap fraction: {H/N}")
+print(f"Estimated area: {AoverlapMes / R**2}")
+print(f"Relative error: {np.abs(AoverlapMes - Aoverlap) / Aoverlap * 100:.2f}%")
+
+plotLeft = x[leftCirc], y[leftCirc]
+plotRight = x[rightCirc], y[rightCirc]
+plotBoth = x[bothCirc], y[bothCirc]
+plotNone = x[noCirc], y[noCirc]
+plt.plot(plotLeft[0], plotLeft[1], 'b.', label='Left Circle Only', markersize=0.7)
+plt.plot(plotRight[0], plotRight[1], 'g.', label='Right Circle Only', markersize=0.7)
+plt.plot(plotBoth[0], plotBoth[1], 'r.', label='Both Circles', markersize=0.7)
+plt.plot(plotNone[0], plotNone[1], 'k.', label='Neither Circle', markersize=0.7)
+plt.xlabel('x')
+plt.ylabel('y')
+theta = np.linspace(0, 2*np.pi, 1000)
+plt.plot(-R/2 + R*np.cos(theta), R*np.sin(theta), 'b-', linewidth=2, label='Left Boundary')
+plt.plot(R/2 + R*np.cos(theta), R*np.sin(theta), 'g-', linewidth=2, label='Right Boundary')
+plt.plot(-R/2, 0, 'bo', markersize=5)
+plt.plot(R/2, 0, 'go', markersize=5)
+plt.axis('equal')
+plt.legend(markerscale=5)
+plt.show()
