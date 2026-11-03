@@ -68,3 +68,40 @@ plt.plot(R/2, 0, 'go', markersize=5)
 plt.axis('equal')
 plt.legend(markerscale=5)
 plt.show()
+
+
+#Two spheres
+R = 1
+N = 100000
+xRange = R / 2
+yRange = R
+zRange = R
+x = rng.random(N) * 2 * xRange - xRange
+y = rng.random(N) * 2 * yRange - yRange
+z = rng.random(N) * 2 * zRange - zRange
+leftCirc = ((x + R/2)**2 + y**2 + z**2 <= R**2) & ((x - R/2)**2 + y**2 + z**2 > R**2)
+rightCirc = ((x - R/2)**2 + y**2 + z**2 <= R**2) & ((x + R/2)**2 + y**2 + z**2 > R**2)
+bothCirc = ((x - R/2)**2 + y**2 + z**2 <= R**2) & ((x + R/2)**2 + y**2 + z**2 <= R**2)
+noCirc = ((x - R/2)**2 + y**2 + z**2 > R**2) & ((x + R/2)**2 + y**2 + z**2 > R**2)
+VB = 4 * R**3
+H = np.sum(bothCirc)
+Vexact = 5 * np.pi / 12 * R**3
+V2 = VB * H / N
+leftCount = np.sum(leftCirc)
+rightCount = np.sum(rightCirc)
+bothCount = np.sum(bothCirc)
+
+print(f"Points in both spheres: {bothCount}")
+print(f"Estimated overlap fraction: {H/N}")
+print(f"Estimated volume: {V2/R**3}")
+print(f"Relative error: {np.abs(V2 - Vexact) / Vexact * 100:.2f}%")
+temp = np.cumsum(bothCirc) / R**3
+Vrunning = VB * np.cumsum(bothCirc) / np.arange(1, N+1)
+plt.plot(np.arange(1, N+1), Vrunning, 'b-', linewidth=1, label='Monte Carlo estimate')
+plt.axhline(Vexact, color='red', linestyle='--', label='Exact volume')
+plt.xscale('log')
+plt.xlabel('Number of random points')
+plt.ylabel('Estimated overlap volume')
+plt.legend()
+plt.show()
+plt.show()
